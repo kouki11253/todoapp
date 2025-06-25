@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <title><%= typeof title !== 'undefined' ? title : 'ToDo App' %></title>
+  <style>
+    /* 完了したToDoに取り消し線を追加 */
+    .completed {
+      text-decoration: line-through;
+      color: grey;
+    }
+    /* ボタンを横に並べるためのコンテナ */
+    .action-buttons form {
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <nav>
+      <ul>
+        <li><strong><a href="/todos">ToDo App</a></strong></li>
+      </ul>
+    </nav>

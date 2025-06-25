@@ -1,0 +1,91 @@
+<%- include('header', { title: 'ToDoリスト' }) %>
+
+  <article>
+    <header>
+      <h2>ToDoの検索・絞り込み</h2>
+    </header>
+    <form action="/todos" method="GET">
+      <div class="grid">
+        <label for="title">
+          タイトル
+          <input type="text" id="title" name="title" value="<%= typeof query !== 'undefined' ? query.title : '' %>">
+        </label>
+        <label for="body">
+          内容
+          <input type="text" id="body" name="body" value="<%= typeof query !== 'undefined' ? query.body : '' %>">
+        </label>
+      </div>
+      <div class="grid">
+        <label for="due_date_start">
+          期日 (From)
+          <input type="date" id="due_date_start" name="due_date_start" value="<%= typeof query !== 'undefined' ? query.due_date_start : '' %>">
+        </label>
+        <label for="due_date_end">
+          期日 (To)
+          <input type="date" id="due_date_end" name="due_date_end" value="<%= typeof query !== 'undefined' ? query.due_date_end : '' %>">
+        </label>
+      </div>
+      <label for="completed">
+        完了状態
+        <select id="completed" name="completed">
+          <option value="" <%= typeof query === 'undefined' || query.completed === '' ? 'selected' : '' %>>すべて</option>
+          <option value="true" <%= typeof query !== 'undefined' && query.completed === 'true' ? 'selected' : '' %>>完了</option>
+          <option value="false" <%= typeof query !== 'undefined' && query.completed === 'false' ? 'selected' : '' %>>未完了</option>
+        </select>
+      </label>
+      <button type="submit">検索</button>
+      <a href="/todos" role="button" class="secondary">リセット</a>
+    </form>
+  </article>
+
+  <article>
+    <header>
+      <h2>新しいToDoの作成</h2>
+    </header>
+    <form action="/todos" method="POST">
+      <label for="new-title">タイトル (必須)</label>
+      <input type="text" id="new-title" name="title" required>
+      <label for="new-body">内容</label>
+      <textarea id="new-body" name="body"></textarea>
+      <label for="new-due-date">期日</label>
+      <input type="date" id="new-due-date" name="due_date">
+      <button type="submit">作成</button>
+    </form>
+  </article>
+
+  <article>
+    <header>
+      <h2>ToDoリスト</h2>
+    </header>
+    <% if (todos.length > 0) { %>
+      <% todos.forEach(todo => { %>
+        <details>
+          <summary class="<%= todo.completed ? 'completed' : '' %>">
+            <strong><%= todo.title %></strong>
+            <% if (todo.due_date) { %>
+              <small> (期日: <%= new Date(todo.due_date).toLocaleDateString() %>)</small>
+            <% } %>
+          </summary>
+          <p><%= todo.body %></p>
+          <div class="action-buttons">
+            <form action="/todos/<%= todo.id %>?_method=PATCH" method="POST">
+              <input type="hidden" name="completed" value="<%= !todo.completed %>">
+              <input type="hidden" name="title" value="<%= todo.title %>">
+              <button type="submit" class="secondary outline"><%= todo.completed ? '未完了に戻す' : '完了にする' %></button>
+            </form>
+            <a href="/todos/<%= todo.id %>/edit" role="button" class="secondary outline">編集</a>
+            <form action="/todos/<%= todo.id %>/duplicate" method="POST">
+              <button type="submit" class="secondary outline">複製</button>
+            </form>
+            <form action="/todos/<%= todo.id %>?_method=DELETE" method="POST" onsubmit="return confirm('本当に削除しますか？');">
+              <button type="submit" class="contrast outline">削除</button>
+            </form>
+          </div>
+        </details>
+      <% }); %>
+    <% } else { %>
+      <p>該当するToDoはありません。</p>
+    <% } %>
+  </article>
+
+<%- include('footer') %>

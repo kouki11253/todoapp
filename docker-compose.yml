@@ -1,0 +1,45 @@
+
+services:
+  # Node.jsアプリケーションのサービス (TypeScript開発環境)
+  app:
+    build: . # カレントディレクトリのDockerfileを使ってイメージをビルド
+    ports:
+      - "3000:3000" # PCの3000番ポートとコンテナの3000番ポートを接続
+    volumes:
+      # PCのファイルとコンテナのファイルを同期して、コードの変更を即時反映させる
+      # これにより、PC側で .ts ファイルを編集すると、コンテナ内で自動的にサーバーが再起動します
+      - .:/usr/src/app
+      # ただし、node_modulesはコンテナ内のものを使う（PCのOSとの競合を避けるため）
+      - /usr/src/app/node_modules
+    environment:
+      # app.tsで使う環境変数。DBへの接続情報を定義
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: password
+      DB_DATABASE: todo_app_db
+    depends_on:
+      # mysqlサービスが起動してからappサービスを起動する
+      - mysql
+    # コンテナ起動時に実行するコマンドを変更
+    # 'npm run dev' を実行するように指定します。
+    # これにより、ts-node-devなどが起動し、TypeScriptファイルの変更を監視します。
+    command: npm run dev
+
+  # MySQLデータベースのサービス (変更なし)
+  mysql:
+    image: mysql:8.0 # Docker Hubの公式MySQLイメージを使用
+    ports:
+      # PCの3306ポートと接続。MySQL Workbenchなどで接続したい場合に使う
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password # rootユーザーのパスワード
+      MYSQL_DATABASE: todo_app_db # 作成するデータベース名
+    volumes:
+      # データベースのデータをPC上に永続化するための設定
+      - mysql-data:/var/lib/mysql
+      # 初期データを投入するためのSQLファイルをマウント
+      - ./mysql-init:/docker-entrypoint-initdb.d
+
+# データベースのデータを永続化するための名前付きボリュームを定義
+volumes:
+  mysql-data:

@@ -1,0 +1,25 @@
+generator client {
+  provider      = "prisma-client-js"
+  // ★★★ ここに binaryTargets を追加 ★★★
+  // これで、Windows(native)とDockerコンテナ(linux-musl)の両方のエンジンが生成される
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  //binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Todo {
+  id         String    @id @default(uuid())
+  title      String    @db.VarChar(255)
+  body       String?   @db.Text
+  completed  Boolean?  @default(false)
+  due_date   DateTime? @db.Date
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
+
+  // このモデルがデータベースの 'todos' テーブルに対応することを示す
+  @@map("todos")
+}

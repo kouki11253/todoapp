@@ -1,0 +1,27 @@
+<%- include('header', { title: 'ToDoの編集' }) %>
+
+<article>
+  <header>
+    <h2>ToDoの編集</h2>
+  </header>
+  <form action="/todos/<%= todo.id %>?_method=PATCH" method="POST">
+    <label for="title">タイトル (必須)</label>
+    <input type="text" id="title" name="title" value="<%= todo.title %>" required>
+
+    <label for="body">内容</label>
+    <textarea id="body" name="body"><%= todo.body %></textarea>
+
+    <label for="due-date">期日</label>
+    <input type="date" id="due-date" name="due_date" value="<%= todo.due_date ? new Date(todo.due_date).toISOString().substring(0, 10) : '' %>">
+
+    <label for="completed">
+      <input type="checkbox" id="completed" name="completed" value="true" <%= todo.completed ? 'checked' : '' %>>
+      完了
+    </label>
+    
+    <button type="submit">更新</button>
+  </form>
+  <a href="/todos">キャンセルして一覧に戻る</a>
+</article>
+
+<%- include('footer') %>
